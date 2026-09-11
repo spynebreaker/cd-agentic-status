@@ -1,9 +1,9 @@
 {
- "activity": "working",
- "generated_at": "2026-09-11T23:24:57Z",
+ "activity": "idle",
+ "generated_at": "2026-09-11T23:28:06Z",
  "schema": "cd-agentic-public-status/3",
- "since": "2026-09-11T23:24:57Z",
+ "since": "2026-09-11T23:28:06Z",
  "stale_after_seconds": 600,
- "state": "YELLOW",
- "work": "Sitecraft foundation recovery"
+ "state": "RED",
+ "work": null
 }
