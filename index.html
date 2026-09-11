@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Status</title>
+<style>
+  :root { color-scheme: light dark; --bg:#f6f7f9; --fg:#16181d;
+          --green:#1a8f4c; --yellow:#c98a00; --red:#c93434; --grey:#6b7280; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0f1115; --fg:#e8eaee; } }
+  html, body { height:100%; margin:0; }
+  body { display:flex; align-items:center; justify-content:center; background:var(--bg); color:var(--fg);
+         font:16px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  main { text-align:center; padding:24px; }
+  .light { width:140px; height:140px; margin:0 auto 22px; border-radius:50%; background:var(--grey);
+           box-shadow: inset 0 -8px 20px rgba(0,0,0,.18); }
+  .line { margin:0; font-size:28px; font-weight:700; }
+  .since { font-weight:500; }
+</style>
+</head>
+<body>
+<main aria-live="polite">
+  <div class="light" id="light" role="img" aria-label="UNKNOWN"></div>
+  <p class="line"><span id="state">UNKNOWN</span><span class="since" id="since"></span></p>
+</main>
+<script>
+"use strict";
+const SCHEMA = "cd-agentic-public-status/2";
+const STATES = ["GREEN", "YELLOW", "RED"];
+const STALE_AFTER_SECONDS = 600;
+const STALE_AFTER_CAP_SECONDS = 3600;
+const CLOCK_SKEW_SECONDS = 120;
+const JSON_URL = "https://raw.githubusercontent.com/spynebreaker/cd-agentic-status/status/status.json";
+const FETCH_EVERY_MS = 60000;
+const COLORS = { GREEN: "var(--green)", YELLOW: "var(--yellow)", RED: "var(--red)", STALE: "var(--grey)", UNKNOWN: "var(--grey)" };
+
+let lastDoc = null;
+
+function parseTs(value) {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(value)) return null;
+  const ms = Date.parse(value);
+  return isNaN(ms) ? null : ms / 1000;
+}
+
+function isoAt(seconds) {
+  return new Date(seconds * 1000).toISOString().replace(/\.\d{3}Z$/, "Z");
+}
+
+// Staleness is judged by the reader, now: an old document never keeps its colour, and its STALE
+// began the moment it ran out of grace. Returns [state, since].
+function effectiveState(doc, nowSeconds) {
+  if (!doc || typeof doc !== "object" || doc.schema !== SCHEMA) return ["UNKNOWN", null];
+  const generated = parseTs(doc.generated_at);
+  if (generated === null) return ["UNKNOWN", null];
+  const age = nowSeconds - generated;
+  if (age < -CLOCK_SKEW_SECONDS) return ["UNKNOWN", null];
+  let staleAfter = doc.stale_after_seconds;
+  if (!Number.isInteger(staleAfter) || staleAfter <= 0) staleAfter = STALE_AFTER_SECONDS;
+  staleAfter = Math.min(staleAfter, STALE_AFTER_CAP_SECONDS);
+  if (age > staleAfter) return ["STALE", isoAt(generated + staleAfter)];
+  if (!STATES.includes(doc.state)) return ["UNKNOWN", null];
+  const since = parseTs(doc.since);
+  if (since === null || since > generated) return ["UNKNOWN", null];
+  return [doc.state, doc.since];
+}
+
+function shown(ts) {
+  try {
+    return new Date(parseTs(ts) * 1000).toLocaleString(undefined, { year: "numeric", month: "short",
+      day: "numeric", hour: "2-digit", minute: "2-digit", timeZoneName: "short" });
+  } catch (e) {
+    return ts;
+  }
+}
+
+function render() {
+  const [state, since] = effectiveState(lastDoc, Date.now() / 1000);
+  const light = document.getElementById("light");
+  light.style.background = COLORS[state];
+  light.setAttribute("aria-label", state);
+  document.getElementById("state").textContent = state;
+  document.getElementById("since").textContent = since ? " — since " + shown(since) : "";
+}
+
+async function refresh() {
+  try {
+    const url = JSON_URL + (JSON_URL.indexOf("?") === -1 ? "?" : "&") + "t=" + Date.now();
+    const response = await fetch(url, { cache: "no-store" });
+    if (response.ok) lastDoc = await response.json();
+  } catch (e) {
+    // keep the last document; the reader turns it STALE on its own
+  }
+  render();
+}
+
+refresh();
+setInterval(refresh, FETCH_EVERY_MS);
+setInterval(render, 5000);
+</script>
+</body>
+</html>
