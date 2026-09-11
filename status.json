@@ -1,9 +1,9 @@
 {
- "activity": "working",
- "generated_at": "2026-09-11T08:26:03Z",
+ "activity": "idle",
+ "generated_at": "2026-09-11T08:29:13Z",
  "schema": "cd-agentic-public-status/3",
- "since": "2026-09-11T04:16:52Z",
+ "since": "2026-09-11T08:29:13Z",
  "stale_after_seconds": 600,
- "state": "GREEN",
- "work": "Sitecraft five seasons foundation retry"
+ "state": "RED",
+ "work": null
 }
