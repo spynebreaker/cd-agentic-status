@@ -1,9 +1,9 @@
 {
- "activity": "working",
- "generated_at": "2026-09-11T22:40:45Z",
+ "activity": "idle",
+ "generated_at": "2026-09-11T22:43:55Z",
  "schema": "cd-agentic-public-status/3",
- "since": "2026-09-11T22:28:08Z",
+ "since": "2026-09-11T22:43:55Z",
  "stale_after_seconds": 600,
- "state": "GREEN",
- "work": "Resend operator email"
+ "state": "RED",
+ "work": null
 }
