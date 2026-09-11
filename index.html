@@ -61,7 +61,7 @@ function isoAt(seconds) {
 // Staleness is judged by the reader, now: an old document never keeps its colour, and its STALE
 // began the moment it ran out of grace. Returns [state, since].
 function effectiveState(doc, nowSeconds) {
-  if (!doc || typeof doc !== "object" || doc.schema !== SCHEMA) return ["UNKNOWN", null];
+  if (!doc || typeof doc !== "object" || !READABLE_SCHEMAS.includes(doc.schema)) return ["UNKNOWN", null];
   const generated = parseTs(doc.generated_at);
   if (generated === null) return ["UNKNOWN", null];
   const age = nowSeconds - generated;
@@ -74,6 +74,16 @@ function effectiveState(doc, nowSeconds) {
   const since = parseTs(doc.since);
   if (since === null || since > generated) return ["UNKNOWN", null];
   return [doc.state, doc.since];
+}
+
+// One plain line about the work, and only while the light itself is readable: a stale or unknown
+// document names no work.
+function workLine(doc, state) {
+  if (!STATES.includes(state) || !doc || typeof doc !== "object" || doc.schema !== SCHEMA) return UNKNOWN_LINE;
+  if (doc.activity === "idle" && doc.work === null) return IDLE_LINE;
+  if (Object.prototype.hasOwnProperty.call(WORK_PREFIXES, doc.activity) && typeof doc.work === "string"
+      && doc.work.length <= WORK_LABEL_MAX && WORK_LABEL.test(doc.work)) return WORK_PREFIXES[doc.activity] + doc.work;
+  return UNKNOWN_LINE;
 }
 
 function shown(ts) {
@@ -92,6 +102,7 @@ function render() {
   light.setAttribute("aria-label", state);
   document.getElementById("state").textContent = state;
   document.getElementById("since").textContent = since ? " — since " + shown(since) : "";
+  document.getElementById("work").textContent = workLine(lastDoc, state);
 }
 
 async function refresh() {
