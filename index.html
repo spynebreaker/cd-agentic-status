@@ -81,7 +81,8 @@ function effectiveState(doc, nowSeconds) {
 function workLine(doc, state) {
   if (!STATES.includes(state) || !doc || typeof doc !== "object" || doc.schema !== SCHEMA) return UNKNOWN_LINE;
   if (doc.activity === "idle" && doc.work === null) return IDLE_LINE;
-  if (Object.prototype.hasOwnProperty.call(WORK_PREFIXES, doc.activity) && typeof doc.work === "string"
+  if (typeof doc.activity === "string" && Object.prototype.hasOwnProperty.call(WORK_PREFIXES, doc.activity)
+      && typeof doc.work === "string"
       && doc.work.length <= WORK_LABEL_MAX && WORK_LABEL.test(doc.work)) return WORK_PREFIXES[doc.activity] + doc.work;
   return UNKNOWN_LINE;
 }
