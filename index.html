@@ -20,17 +20,25 @@
            box-shadow: inset 0 -8px 20px rgba(0,0,0,.18); }
   .line { margin:0; font-size:28px; font-weight:700; }
   .since { font-weight:500; }
+  .work { margin:12px 0 0; font-size:18px; font-weight:500; opacity:.8; }
 </style>
 </head>
 <body>
 <main aria-live="polite">
   <div class="light" id="light" role="img" aria-label="UNKNOWN"></div>
   <p class="line"><span id="state">UNKNOWN</span><span class="since" id="since"></span></p>
+  <p class="work" id="work"></p>
 </main>
 <script>
 "use strict";
-const SCHEMA = "cd-agentic-public-status/2";
+const SCHEMA = "cd-agentic-public-status/3";
+const READABLE_SCHEMAS = [SCHEMA, "cd-agentic-public-status/2"];
 const STATES = ["GREEN", "YELLOW", "RED"];
+const WORK_LABEL = /^[A-Z][a-z]{1,23}( [a-z]{1,24}){0,5}$/;
+const WORK_LABEL_MAX = 60;
+const WORK_PREFIXES = { working: "Working on: ", waiting: "Up next: " };
+const IDLE_LINE = "Working on: Nothing — waiting for new work";
+const UNKNOWN_LINE = "Working on: Unknown";
 const STALE_AFTER_SECONDS = 600;
 const STALE_AFTER_CAP_SECONDS = 3600;
 const CLOCK_SKEW_SECONDS = 120;
