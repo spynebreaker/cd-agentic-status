@@ -115,7 +115,7 @@ function projectLine(doc, state) {
   return (doc.projects.length === 1 ? PROJECT_PREFIX_ONE : PROJECT_PREFIX_MANY) + doc.projects.join(", ");
 }
 
-// What is merely queued, shown only beside work that is actually running, so the two can never be
+// What is merely waiting, shown only beside work that is actually running, so the two can never be
 // read as one.
 function nextLine(doc, state) {
   if (!STATES.includes(state) || !doc || typeof doc !== "object" || doc.schema !== SCHEMA) return "";
