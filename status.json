@@ -1,9 +1,9 @@
 {
- "activity": "working",
- "generated_at": "2026-09-12T00:31:19Z",
+ "activity": "idle",
+ "generated_at": "2026-09-12T00:34:29Z",
  "schema": "cd-agentic-public-status/3",
- "since": "2026-09-11T23:43:54Z",
+ "since": "2026-09-12T00:34:29Z",
  "stale_after_seconds": 600,
- "state": "GREEN",
- "work": "Narrow observation"
+ "state": "RED",
+ "work": null
 }
