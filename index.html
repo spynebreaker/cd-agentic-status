@@ -20,25 +20,37 @@
            box-shadow: inset 0 -8px 20px rgba(0,0,0,.18); }
   .line { margin:0; font-size:28px; font-weight:700; }
   .since { font-weight:500; }
-  .work { margin:12px 0 0; font-size:18px; font-weight:500; opacity:.8; }
+  .who { margin:14px 0 0; font-size:20px; font-weight:600; }
+  .work { margin:6px 0 0; font-size:18px; font-weight:500; opacity:.8; }
+  .next { margin:6px 0 0; font-size:16px; font-weight:500; opacity:.6; }
 </style>
 </head>
 <body>
 <main aria-live="polite">
   <div class="light" id="light" role="img" aria-label="UNKNOWN"></div>
   <p class="line"><span id="state">UNKNOWN</span><span class="since" id="since"></span></p>
+  <p class="who" id="who"></p>
   <p class="work" id="work"></p>
+  <p class="next" id="next"></p>
 </main>
 <script>
 "use strict";
-const SCHEMA = "cd-agentic-public-status/3";
-const READABLE_SCHEMAS = [SCHEMA, "cd-agentic-public-status/2"];
+const SCHEMA = "cd-agentic-public-status/4";
+const READABLE_SCHEMAS = [SCHEMA, "cd-agentic-public-status/3", "cd-agentic-public-status/2"];
+const WORK_SCHEMAS = [SCHEMA, "cd-agentic-public-status/3"];
 const STATES = ["GREEN", "YELLOW", "RED"];
 const WORK_LABEL = /^[A-Z][a-z]{1,23}( [a-z]{1,24}){0,5}$/;
 const WORK_LABEL_MAX = 60;
 const WORK_PREFIXES = { working: "Working on: ", waiting: "Up next: " };
 const IDLE_LINE = "Working on: Nothing — waiting for new work";
 const UNKNOWN_LINE = "Working on: Unknown";
+const PROJECT_NAME = /^[A-Z][A-Za-z]{0,15}( [A-Za-z]{1,15}){0,2}$/;
+const PROJECT_NAME_MAX = 24;
+const PROJECTS_MAX = 4;
+const PROJECT_PREFIX_ONE = "Project: ";
+const PROJECT_PREFIX_MANY = "Projects: ";
+const PROJECTS_NONE_LINE = "Projects: None";
+const NEXT_PROJECT_PREFIX = "Up next: ";
 const STALE_AFTER_SECONDS = 600;
 const STALE_AFTER_CAP_SECONDS = 3600;
 const CLOCK_SKEW_SECONDS = 120;
@@ -79,12 +91,37 @@ function effectiveState(doc, nowSeconds) {
 // One plain line about the work, and only while the light itself is readable: a stale or unknown
 // document names no work.
 function workLine(doc, state) {
-  if (!STATES.includes(state) || !doc || typeof doc !== "object" || doc.schema !== SCHEMA) return UNKNOWN_LINE;
+  if (!STATES.includes(state) || !doc || typeof doc !== "object" || !WORK_SCHEMAS.includes(doc.schema)) return UNKNOWN_LINE;
   if (doc.activity === "idle" && doc.work === null) return IDLE_LINE;
   if (typeof doc.activity === "string" && Object.prototype.hasOwnProperty.call(WORK_PREFIXES, doc.activity)
       && typeof doc.work === "string"
       && doc.work.length <= WORK_LABEL_MAX && WORK_LABEL.test(doc.work)) return WORK_PREFIXES[doc.activity] + doc.work;
   return UNKNOWN_LINE;
+}
+
+function validNames(value) {
+  if (!Array.isArray(value) || value.length > PROJECTS_MAX) return false;
+  if (!value.every(n => typeof n === "string" && n.length <= PROJECT_NAME_MAX && PROJECT_NAME.test(n))) return false;
+  const sorted = Array.from(new Set(value)).sort();
+  return value.length === sorted.length && value.every((n, i) => n === sorted[i]);
+}
+
+// Whose work it is. A stale, unknown or older document says nothing at all rather than guessing;
+// a readable one with nothing executing says so.
+function projectLine(doc, state) {
+  if (!STATES.includes(state) || !doc || typeof doc !== "object" || doc.schema !== SCHEMA) return "";
+  if (!validNames(doc.projects)) return "";
+  if (doc.projects.length === 0) return PROJECTS_NONE_LINE;
+  return (doc.projects.length === 1 ? PROJECT_PREFIX_ONE : PROJECT_PREFIX_MANY) + doc.projects.join(", ");
+}
+
+// What is merely queued, shown only beside work that is actually running, so the two can never be
+// read as one.
+function nextLine(doc, state) {
+  if (!STATES.includes(state) || !doc || typeof doc !== "object" || doc.schema !== SCHEMA) return "";
+  if (!validNames(doc.projects) || doc.projects.length === 0) return "";
+  if (!validNames(doc.next_projects) || doc.next_projects.length === 0) return "";
+  return NEXT_PROJECT_PREFIX + doc.next_projects.join(", ");
 }
 
 function shown(ts) {
@@ -103,7 +140,9 @@ function render() {
   light.setAttribute("aria-label", state);
   document.getElementById("state").textContent = state;
   document.getElementById("since").textContent = since ? " — since " + shown(since) : "";
+  document.getElementById("who").textContent = projectLine(lastDoc, state);
   document.getElementById("work").textContent = workLine(lastDoc, state);
+  document.getElementById("next").textContent = nextLine(lastDoc, state);
 }
 
 async function refresh() {
