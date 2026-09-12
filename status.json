@@ -1,13 +1,11 @@
 {
- "activity": "working",
- "generated_at": "2026-09-12T05:03:18Z",
+ "activity": "idle",
+ "generated_at": "2026-09-12T05:05:27Z",
  "next_projects": [],
- "projects": [
-  "CD Agentic"
- ],
+ "projects": [],
  "schema": "cd-agentic-public-status/4",
- "since": "2026-09-12T03:45:11Z",
+ "since": "2026-09-12T05:05:27Z",
  "stale_after_seconds": 600,
- "state": "GREEN",
- "work": "Collapse"
+ "state": "RED",
+ "work": null
 }
