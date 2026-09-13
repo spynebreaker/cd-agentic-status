@@ -1,15 +1,11 @@
 {
- "activity": "working",
- "generated_at": "2026-09-13T11:01:14Z",
- "next_projects": [
-  "CD Agentic"
- ],
- "projects": [
-  "Sitecraft"
- ],
+ "activity": "waiting",
+ "generated_at": "2026-09-13T11:02:22Z",
+ "next_projects": [],
+ "projects": [],
  "schema": "cd-agentic-public-status/4",
- "since": "2026-09-13T09:12:54Z",
+ "since": "2026-09-13T11:02:22Z",
  "stale_after_seconds": 600,
- "state": "GREEN",
- "work": "Overnight narrowfield autonomy"
+ "state": "RED",
+ "work": "Overnight continuation"
 }
