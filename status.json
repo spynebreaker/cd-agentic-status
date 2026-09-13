@@ -1,11 +1,9 @@
 {
  "activity": "working",
- "generated_at": "2026-09-13T10:12:10Z",
+ "generated_at": "2026-09-13T10:13:17Z",
  "next_projects": [],
  "projects": [
-  "CD Agentic",
-  "Private project",
-  "Sitecraft"
+  "BGD"
  ],
  "schema": "cd-agentic-public-status/4",
  "since": "2026-09-13T09:12:54Z",
