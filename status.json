@@ -1,15 +1,11 @@
 {
- "activity": "working",
- "generated_at": "2026-09-14T04:56:15Z",
- "next_projects": [
-  "BGD"
- ],
- "projects": [
-  "CD Agentic"
- ],
+ "activity": "waiting",
+ "generated_at": "2026-09-14T04:57:23Z",
+ "next_projects": [],
+ "projects": [],
  "schema": "cd-agentic-public-status/4",
- "since": "2026-09-14T04:03:05Z",
+ "since": "2026-09-14T04:57:23Z",
  "stale_after_seconds": 600,
- "state": "GREEN",
- "work": "Recover and resume project work"
+ "state": "RED",
+ "work": "Narrow field nf"
 }
