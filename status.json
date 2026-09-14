@@ -1,13 +1,11 @@
 {
- "activity": "working",
- "generated_at": "2026-09-14T01:28:22Z",
+ "activity": "waiting",
+ "generated_at": "2026-09-14T01:29:30Z",
  "next_projects": [],
- "projects": [
-  "Private project"
- ],
+ "projects": [],
  "schema": "cd-agentic-public-status/4",
- "since": "2026-09-14T01:08:03Z",
+ "since": "2026-09-14T01:29:30Z",
  "stale_after_seconds": 600,
- "state": "GREEN",
+ "state": "YELLOW",
  "work": "Private work"
 }
