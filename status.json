@@ -1,15 +1,11 @@
 {
- "activity": "working",
- "generated_at": "2026-09-14T05:38:03Z",
- "next_projects": [
-  "CD Agentic"
- ],
- "projects": [
-  "Private project"
- ],
+ "activity": "waiting",
+ "generated_at": "2026-09-14T05:39:11Z",
+ "next_projects": [],
+ "projects": [],
  "schema": "cd-agentic-public-status/4",
- "since": "2026-09-14T04:58:30Z",
+ "since": "2026-09-14T05:39:11Z",
  "stale_after_seconds": 600,
- "state": "GREEN",
- "work": "Private work"
+ "state": "RED",
+ "work": "Commit runtime status"
 }
